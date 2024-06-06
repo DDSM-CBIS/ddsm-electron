@@ -1,20 +1,20 @@
-import { ipcRenderer, contextBridge } from 'electron'
+import { ipcRenderer, contextBridge } from 'electron';
+import { CHANNELS, CLIENT_AGENT_NAME } from './constants/common';
 
-contextBridge.exposeInMainWorld('ipcRenderer', {
-  on(...args: Parameters<typeof ipcRenderer.on>) {
-    const [channel, listener] = args
-    return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args))
+const api = {
+  channels: CHANNELS,
+  send: async (channel: string, data: any): Promise<any> => {
+    return ipcRenderer.invoke(channel, data);
   },
-  off(...args: Parameters<typeof ipcRenderer.off>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.off(channel, ...omit)
+  listen: (channel: string, func: (event: any, ...args: any[]) => void) => {
+    ipcRenderer.on(channel, func);
   },
-  send(...args: Parameters<typeof ipcRenderer.send>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.send(channel, ...omit)
+  removeListener: (channel: string) => {
+    ipcRenderer.removeAllListeners(channel);
   },
-  invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.invoke(channel, ...omit)
+  closeWindow: () => {
+    ipcRenderer.send(CHANNELS.CLOSE_WINDOW);
   },
-})
+};
+
+contextBridge.exposeInMainWorld(CLIENT_AGENT_NAME, api);

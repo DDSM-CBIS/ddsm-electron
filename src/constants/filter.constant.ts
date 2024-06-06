@@ -4,61 +4,52 @@ export const FilterMenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
+      width: 300,
     },
   },
 };
 
-export const FILTERS = {
-  breast_side: {
-    title: 'Breast Side',
-    items: ['Right', 'Left'],
-  },
-  view: {
-    title: 'View',
-    items: ['MLO', 'CC'],
-  },
-  abnormality: {
-    title: 'Abnormality',
-    items: ['Mass', 'Calcification'],
-  },
-  breast_density: {
-    title: 'Breast Density',
-    items: ['1', '2', '3', '4'],
-  },
-  subtlety: {
-    title: 'Subtlety',
-    items: ['1', '2', '3', '4', '5'],
-  },
-  birads_assessment: {
-    title: 'BIRADS Assessment',
-    items: ['0', '1', '2', '3', '4', '5'],
-  },
-  pathology: {
-    title: 'Pathology',
-    items: ['Benign', 'Malignant', 'Benign without callback'],
-  },
-  abnormalities: {
-    title: '#Abnormalities',
-    items: ['0', '1', '2', '3', '4', '5'],
-  },
+export const FiltersMenuHeaders = {
+  leftOrRightBreast: 'Breast Side',
+  imageView: 'View',
+  abnormalityType: 'Abnormality',
+  breastDensity: 'Breast Density',
+  subtlety: 'Subtlety',
+  assessment: 'BIRADS Assessment',
+  pathology: 'Pathology',
+  abnormalityId: '#Abnormality',
 };
 
-export const ABNORMALITY_PARAMS = {
-  classification_type: {
-    title: 'Classification Type',
-    items: ['0', '1', '2', '3', '4', '5'],
-  },
-  classification_distribution: {
-    title: 'Classification Distribution',
-    items: ['0', '1', '2', '3', '4', '5'],
-  },
-  mass_shape: {
-    title: 'Mass Shape',
-    items: ['IRREGULAR', 'ROUND', 'LOBULATED', 'OVAL', 'IRREGULAR-ARCHITECTURAL_DISTORTION'],
-  },
-  mass_margins: {
-    title: 'Mass Margins',
-    items: ['SPICULATED', 'CIRCUMSCRIBED', 'ILL_DEFINED', 'OBSCURED'],
-  },
+export const AbnormalityFilterMenuHeaders = {
+  calcType: 'Classification Type',
+  calcDistribution: 'Classification Distribution',
+  massShape: 'Mass Shape',
+  massMargins: 'Mass Margins',
 };
+
+export interface FilterObject {
+  leftOrRightBreast: string[];
+  imageView: string[];
+  abnormalityId: string[];
+  abnormalityType: string[];
+  breastDensity: string[];
+  subtlety: string[];
+  assessment: string[];
+  pathology: string[];
+}
+
+export interface AbnormalityFilterObject {
+  calcType: string[];
+  calcDistribution: string[];
+  massShape: string[];
+  massMargins: string[];
+}
+
+export interface PatientFilterObject {
+  patientId: string[];
+}
+
+// {"calcType": ["COARSE-ROUND_AND_REGULAR-LUCENT_CENTERED", "AMORPHOUS-PLEOMORPHIC", "PUNCTATE-LUCENT_CENTER", "SKIN-PUNCTATE", "SKIN-PUNCTATE-ROUND_AND_REGULAR", "FINE_LINEAR_BRANCHING", "AMORPHOUS", "ROUND_AND_REGULAR-LUCENT_CENTER-DYSTROPHIC", "VASCULAR", "ROUND_AND_REGULAR", "VASCULAR-COARSE-LUCENT_CENTER-ROUND_AND_REGULAR-PUNCTATE", "ROUND_AND_REGULAR-LUCENT_CENTER", "COARSE-LUCENT_CENTER", "DYSTROPHIC", "ROUND_AND_REGULAR-PUNCTATE", "ROUND_AND_REGULAR-AMORPHOUS", "AMORPHOUS-ROUND_AND_REGULAR", "PUNCTATE-AMORPHOUS", "PLEOMORPHIC-PLEOMORPHIC", "PUNCTATE-ROUND_AND_REGULAR", "PUNCTATE-FINE_LINEAR_BRANCHING", "ROUND_AND_REGULAR-LUCENT_CENTER-PUNCTATE", "VASCULAR-COARSE-LUCENT_CENTERED", "ROUND_AND_REGULAR-LUCENT_CENTERED", "EGGSHELL", "PUNCTATE-PLEOMORPHIC", "COARSE", "ROUND_AND_REGULAR-PUNCTATE-AMORPHOUS", "ROUND_AND_REGULAR-EGGSHELL", "SKIN", "SKIN-COARSE-ROUND_AND_REGULAR", "LUCENT_CENTER", "LARGE_RODLIKE", "LUCENT_CENTER-PUNCTATE", "LARGE_RODLIKE-ROUND_AND_REGULAR", "COARSE-ROUND_AND_REGULAR", "PLEOMORPHIC-AMORPHOUS", "MILK_OF_CALCIUM", "LUCENT_CENTERED", "PUNCTATE", "PUNCTATE-AMORPHOUS-PLEOMORPHIC", "VASCULAR-COARSE", "ROUND_AND_REGULAR-PLEOMORPHIC", "PLEOMORPHIC-FINE_LINEAR_BRANCHING", "COARSE-ROUND_AND_REGULAR-LUCENT_CENTER", "PLEOMORPHIC", "COARSE-PLEOMORPHIC"],
+//"calcDistribution": ["REGIONAL-REGIONAL", "SEGMENTAL", "CLUSTERED-SEGMENTAL", "DIFFUSELY_SCATTERED", "CLUSTERED-LINEAR", "LINEAR", "REGIONAL", "CLUSTERED", "LINEAR-SEGMENTAL"],
+//"massShape": ["ARCHITECTURAL_DISTORTION", "ROUND-LOBULATED", "IRREGULAR-ASYMMETRIC_BREAST_TISSUE", "ROUND-OVAL", "ASYMMETRIC_BREAST_TISSUE", "IRREGULAR-FOCAL_ASYMMETRIC_DENSITY", "IRREGULAR", "LOBULATED-LYMPH_NODE", "LOBULATED-ARCHITECTURAL_DISTORTION", "LOBULATED-IRREGULAR", "LOBULATED", "OVAL-LYMPH_NODE", "FOCAL_ASYMMETRIC_DENSITY", "OVAL-LOBULATED", "LOBULATED-OVAL", "ROUND", "LYMPH_NODE", "OVAL", "ROUND-IRREGULAR-ARCHITECTURAL_DISTORTION", "IRREGULAR-ARCHITECTURAL_DISTORTION"],
+// "massMargins": ["OBSCURED-ILL_DEFINED-SPICULATED", "CIRCUMSCRIBED-OBSCURED-ILL_DEFINED", "CIRCUMSCRIBED-SPICULATED", "ILL_DEFINED", "MICROLOBULATED-SPICULATED", "MICROLOBULATED-ILL_DEFINED-SPICULATED", "SPICULATED", "CIRCUMSCRIBED-MICROLOBULATED-ILL_DEFINED", "CIRCUMSCRIBED-MICROLOBULATED", "CIRCUMSCRIBED-OBSCURED", "CIRCUMSCRIBED", "MICROLOBULATED-ILL_DEFINED", "CIRCUMSCRIBED-ILL_DEFINED", "OBSCURED-ILL_DEFINED", "MICROLOBULATED", "ILL_DEFINED-SPICULATED", "OBSCURED-SPICULATED", "OBSCURED-CIRCUMSCRIBED", "OBSCURED"]}

@@ -6,6 +6,18 @@ const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 root.render(<App />);
 
-window.ipcRenderer.on('main-process-message', (_event, message) => {
-  console.log(message);
-});
+declare global {
+  interface Window {
+    DDSM_AGENT?: {
+      channels: any;
+      send: (channel: string, data?: any) => Promise<any>;
+      listen: (channel: string, func: (event: any, ...args: any[]) => void) => void;
+      removeListener: (channel: string) => void;
+      closeWindow: () => void;
+    };
+  }
+}
+
+// window.DDSM_AGENT.on('main-process-message', (_event, message) => {
+//   console.log(message);
+// });
