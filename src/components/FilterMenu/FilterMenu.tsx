@@ -7,7 +7,12 @@ export default function FilterMenu(props: FilterMenuProps) {
   const { variant, sx, title, headers, options, values, onChange } = props;
 
   const handleChange = (key, value) => {
-    const newValues = { ...values, [key]: value };
+    let newValues = { ...values };
+    if (!value || value.length === 0) {
+      delete newValues[key];
+      return onChange(newValues);
+    }
+    newValues = { ...values, [key]: value };
     onChange(newValues);
   };
 

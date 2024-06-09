@@ -1,3 +1,3 @@
-# DDSM-Electron
+# CBIS-DDSM Analyzer Electron
 
 > Electron + React + Vite

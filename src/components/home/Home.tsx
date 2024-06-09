@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { styled } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import FilterMenu from '../FilterMenu/FilterMenu';
+import { Item } from './style';
+import Button from '../button/Button';
 import {
   FiltersMenuHeaders,
   AbnormalityFilterMenuHeaders,
@@ -11,14 +11,6 @@ import {
   PatientFilterObject,
 } from '../../constants/filter.constant';
 import { CHANNELS } from '../../constants/common';
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-}));
 
 const { DDSM_AGENT } = window;
 
@@ -56,16 +48,35 @@ const Home = (): JSX.Element => {
   }, []);
 
   const handleFilterChange = useCallback((value) => {
+    if (!value || Object.keys(value).length === 0) {
+      return setFilterOptions(null);
+    }
     setFilterOptions(value);
   }, []);
 
   const handleAbnormalityFilterChange = useCallback((value) => {
+    if (!value || Object.keys(value).length === 0) {
+      return setAbnormalityFilterOptions(null);
+    }
     setAbnormalityFilterOptions(value);
   }, []);
 
   const handlePatientChange = useCallback((value) => {
+    if (!value || Object.keys(value).length === 0) {
+      return setPatients(null);
+    }
     setPatients(value);
   }, []);
+
+  const isDisabled = useMemo(() => {
+    return !filterOptions && !abnormalityFilterOptions && !patients;
+  }, [filterOptions, abnormalityFilterOptions, patients]);
+
+  const onApply = useCallback(() => {
+    console.log('Filter Options:', filterOptions);
+    console.log('Abnormality Filter Options:', abnormalityFilterOptions);
+    console.log('Patients:', patients);
+  }, [filterOptions, abnormalityFilterOptions, patients]);
 
   return (
     <Grid container>
@@ -97,7 +108,6 @@ const Home = (): JSX.Element => {
               values={abnormalityFilterOptions}
               onChange={handleAbnormalityFilterChange}
             />
-
             <FilterMenu
               variant={'h5'}
               sx={{ marginTop: 4, paddingBlock: 2, background: '#4dabf5', borderRadius: 4, marginRight: 2 }}
@@ -106,6 +116,14 @@ const Home = (): JSX.Element => {
               options={patientOps}
               values={patients}
               onChange={handlePatientChange}
+            />
+            <Button
+              variant="contained"
+              size="small"
+              title="Apply"
+              disabled={isDisabled}
+              sx={{ marginTop: 4 }}
+              onClick={onApply}
             />
           </Grid>
         </Grid>
