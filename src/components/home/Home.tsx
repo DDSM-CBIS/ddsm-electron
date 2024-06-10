@@ -11,14 +11,17 @@ import {
   PatientFilterObject,
 } from '../../constants/filter.constant';
 import { CHANNELS } from '../../constants/common';
+import { PatientsDetails } from 'types/patient';
+import { filterPatients } from '../../utils/filter';
 
 const { DDSM_AGENT } = window;
 
 const Home = (): JSX.Element => {
   const [patientIds, setPatientIds] = useState<string[]>();
-  const [filterOptions, setFilterOptions] = useState<FilterObject>();
-  const [abnormalityFilterOptions, setAbnormalityFilterOptions] = useState<AbnormalityFilterObject>();
-  const [patients, setPatients] = useState<PatientFilterObject>();
+  const [patientsDetails, setPatientsDetails] = useState<PatientsDetails>();
+  const [selectedFilterOptions, setSelectedFilterOptions] = useState<FilterObject>();
+  const [selectedAbnormalityFilterOptions, setSelectedAbnormalityFilterOptions] = useState<AbnormalityFilterObject>();
+  const [selectedPatientIds, setSelectedPatientIds] = useState<PatientFilterObject>();
   const [filterOps, setFilterOps] = useState<FilterObject>();
   const [abnormalityFilterOps, setAbnormalityFilterOps] = useState<AbnormalityFilterObject>();
   const [patientOps, setPatientOps] = useState<PatientFilterObject>();
@@ -42,41 +45,54 @@ const Home = (): JSX.Element => {
       setPatientOps(options);
     };
 
+    const getPatientsDetails = async () => {
+      const response = await DDSM_AGENT.send(CHANNELS.PATIENTS);
+      const patients: PatientsDetails = JSON.parse(response);
+      setPatientsDetails(patients);
+
+      patientIds && setPatientIds(Object.keys(patients));
+    };
+
     getFilterOptions();
     getAbnormalityFilterOptions();
     getPatientOptions();
+    getPatientsDetails();
   }, []);
 
   const handleFilterChange = useCallback((value) => {
     if (!value || Object.keys(value).length === 0) {
-      return setFilterOptions(null);
+      return setSelectedFilterOptions(null);
     }
-    setFilterOptions(value);
+    setSelectedFilterOptions(value);
   }, []);
 
   const handleAbnormalityFilterChange = useCallback((value) => {
     if (!value || Object.keys(value).length === 0) {
-      return setAbnormalityFilterOptions(null);
+      return setSelectedAbnormalityFilterOptions(null);
     }
-    setAbnormalityFilterOptions(value);
+    setSelectedAbnormalityFilterOptions(value);
   }, []);
 
   const handlePatientChange = useCallback((value) => {
     if (!value || Object.keys(value).length === 0) {
-      return setPatients(null);
+      return setSelectedPatientIds(null);
     }
-    setPatients(value);
+    setSelectedPatientIds(value);
   }, []);
 
   const isDisabled = useMemo(() => {
-    return !filterOptions && !abnormalityFilterOptions && !patients;
-  }, [filterOptions, abnormalityFilterOptions, patients]);
+    return !selectedFilterOptions && !selectedAbnormalityFilterOptions && !selectedPatientIds;
+  }, [selectedFilterOptions, selectedAbnormalityFilterOptions, selectedPatientIds]);
 
   const onApply = useCallback(() => {
-    console.log('Filter Options:', filterOptions);
-    console.log('Abnormality Filter Options:', abnormalityFilterOptions);
-    console.log('Patients:', patients);
-  }, [filterOptions, abnormalityFilterOptions, patients]);
+    const filters = {
+      filterOptions: selectedFilterOptions,
+      abnormalityFilter: selectedAbnormalityFilterOptions,
+      patientIds: selectedPatientIds,
+    };
+    const filteredPatients = filterPatients(patientsDetails, filters);
+    setPatientIds(filteredPatients);
+  }, [selectedFilterOptions, selectedAbnormalityFilterOptions, selectedPatientIds]);
 
   return (
     <Grid container>
@@ -94,7 +110,7 @@ const Home = (): JSX.Element => {
               title="Filters"
               headers={FiltersMenuHeaders}
               options={filterOps}
-              values={filterOptions}
+              values={selectedFilterOptions}
               onChange={handleFilterChange}
             />
           </Grid>
@@ -105,7 +121,7 @@ const Home = (): JSX.Element => {
               title="Abnormality Params"
               headers={AbnormalityFilterMenuHeaders}
               options={abnormalityFilterOps}
-              values={abnormalityFilterOptions}
+              values={selectedAbnormalityFilterOptions}
               onChange={handleAbnormalityFilterChange}
             />
             <FilterMenu
@@ -114,7 +130,7 @@ const Home = (): JSX.Element => {
               title="Patients"
               headers={{ patientId: 'Patients Ids' }}
               options={patientOps}
-              values={patients}
+              values={selectedPatientIds}
               onChange={handlePatientChange}
             />
             <Button
@@ -129,9 +145,9 @@ const Home = (): JSX.Element => {
         </Grid>
       </Grid>
       <Grid item xs={8}>
-        <Item>{JSON.stringify(filterOptions)}</Item>
-        <Item>{JSON.stringify(abnormalityFilterOptions)}</Item>
-        <Item>{JSON.stringify(patients)}</Item>
+        {patientIds?.map((patientId) => (
+          <Item key={patientId} title={patientId} />
+        ))}
       </Grid>
     </Grid>
   );

@@ -3,8 +3,11 @@ import axios from '../axios.js';
 import {
   GET_ABNORMALITY_FILTER_OPTIONS,
   GET_FILTER_OPTIONS,
-  GET_IMAGES,
+  GET_IMAGES_DETAILS,
+  GET_IMAGE,
   GET_PATIENT_IDS,
+  GET_PATIENTS,
+  GET_PATIENT_DETAILS,
 } from '../constants/endpoints.js';
 import { CHANNELS } from '../constants/common';
 
@@ -27,6 +30,24 @@ export default function handleMessages(): void {
     }
   });
 
+  ipcMain.handle(CHANNELS.PATIENTS, async () => {
+    try {
+      const response = await axios.get(GET_PATIENTS, { timeout: 10000 });
+      return response.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  });
+
+  ipcMain.handle(CHANNELS.PATIENT_DETAILS, async (event: Electron.IpcMainInvokeEvent, patientId: string) => {
+    try {
+      const response = await axios.get(GET_PATIENT_DETAILS(patientId));
+      return response.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  });
+
   ipcMain.handle(CHANNELS.PATIENT_IDS, async () => {
     try {
       const response = await axios.get(GET_PATIENT_IDS);
@@ -36,10 +57,20 @@ export default function handleMessages(): void {
     }
   });
 
-  ipcMain.handle(CHANNELS.PATIENT_IMAGES, async (event: Electron.IpcMainInvokeEvent, patientId: string) => {
+  ipcMain.handle(CHANNELS.PATIENT_IMAGES_DETAILS, async (event: Electron.IpcMainInvokeEvent, patientId: string) => {
     try {
-      const response = await axios.get(GET_IMAGES(patientId));
-      return response;
+      const response = await axios.get(GET_IMAGES_DETAILS(patientId), { timeout: 10000 });
+      return response.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  });
+
+  ipcMain.handle(CHANNELS.PATIENT_IMAGE, async (event: Electron.IpcMainInvokeEvent, data) => {
+    try {
+      const { patientId, filename } = data;
+      const response = await axios.get(GET_IMAGE(patientId, filename), { responseType: 'arraybuffer', timeout: 10000 });
+      return response.data;
     } catch (error) {
       throw new Error(error);
     }
