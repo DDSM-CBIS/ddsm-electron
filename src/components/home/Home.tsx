@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import Grid from '@mui/material/Grid';
+import { Grid, Pagination } from '@mui/material';
 import FilterMenu from '../FilterMenu/FilterMenu';
-import { Item } from './style';
 import Button from '../button/Button';
 import {
   FiltersMenuHeaders,
@@ -13,11 +12,11 @@ import {
 import { CHANNELS } from '../../constants/common';
 import { PatientsDetails } from 'types/patient';
 import { filterPatients } from '../../utils/filter';
+import PatientContainer from '../patientContainer/patientContainer';
 
 const { DDSM_AGENT } = window;
 
 const Home = (): JSX.Element => {
-  const [patientIds, setPatientIds] = useState<string[]>();
   const [patientsDetails, setPatientsDetails] = useState<PatientsDetails>();
   const [selectedFilterOptions, setSelectedFilterOptions] = useState<FilterObject>();
   const [selectedAbnormalityFilterOptions, setSelectedAbnormalityFilterOptions] = useState<AbnormalityFilterObject>();
@@ -25,6 +24,8 @@ const Home = (): JSX.Element => {
   const [filterOps, setFilterOps] = useState<FilterObject>();
   const [abnormalityFilterOps, setAbnormalityFilterOps] = useState<AbnormalityFilterObject>();
   const [patientOps, setPatientOps] = useState<PatientFilterObject>();
+  const [pageIndex, setPageIndex] = useState<number>(1);
+  const [pageCount, setPageCount] = useState<number>(1);
 
   useEffect(() => {
     const getFilterOptions = async () => {
@@ -46,11 +47,10 @@ const Home = (): JSX.Element => {
     };
 
     const getPatientsDetails = async () => {
-      const response = await DDSM_AGENT.send(CHANNELS.PATIENTS);
-      const patients: PatientsDetails = JSON.parse(response);
+      const patients: PatientsDetails = await DDSM_AGENT.send(CHANNELS.PATIENTS);
       setPatientsDetails(patients);
 
-      patientIds && setPatientIds(Object.keys(patients));
+      setPageCount(Object.keys(patients).length / 2);
     };
 
     getFilterOptions();
@@ -84,15 +84,25 @@ const Home = (): JSX.Element => {
     return !selectedFilterOptions && !selectedAbnormalityFilterOptions && !selectedPatientIds;
   }, [selectedFilterOptions, selectedAbnormalityFilterOptions, selectedPatientIds]);
 
+  const patientIds = useMemo(() => {
+    if (!patientsDetails) return [];
+    const index = (pageIndex - 1) * 2;
+    return Object.keys(patientsDetails).slice(index, index + 2);
+  }, [patientsDetails, pageIndex]);
+
   const onApply = useCallback(() => {
     const filters = {
       filterOptions: selectedFilterOptions,
       abnormalityFilter: selectedAbnormalityFilterOptions,
       patientIds: selectedPatientIds,
     };
-    const filteredPatients = filterPatients(patientsDetails, filters);
-    setPatientIds(filteredPatients);
+    filterPatients(patientsDetails, filters);
+    setPatientsDetails(patientsDetails);
   }, [selectedFilterOptions, selectedAbnormalityFilterOptions, selectedPatientIds]);
+
+  const handlePageChange = useCallback((event, value) => {
+    setPageIndex(value);
+  }, []);
 
   return (
     <Grid container>
@@ -128,7 +138,7 @@ const Home = (): JSX.Element => {
               variant={'h5'}
               sx={{ marginTop: 4, paddingBlock: 2, background: '#4dabf5', borderRadius: 4, marginRight: 2 }}
               title="Patients"
-              headers={{ patientId: 'Patients Ids' }}
+              headers={{ patientsIds: 'Patients Ids' }}
               options={patientOps}
               values={selectedPatientIds}
               onChange={handlePatientChange}
@@ -144,10 +154,13 @@ const Home = (): JSX.Element => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={8}>
-        {patientIds?.map((patientId) => (
-          <Item key={patientId} title={patientId} />
-        ))}
+      <Grid item xs={8} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+        <div>
+          {patientIds && patientIds?.map((patientId) => <PatientContainer key={patientId} patientId={patientId} />)}
+        </div>
+        <div style={{ display: 'flex', position: 'fixed', right: 0, bottom: 6, margin: 2 }}>
+          <Pagination count={pageCount} page={pageIndex} onChange={handlePageChange} size="small" />
+        </div>
       </Grid>
     </Grid>
   );

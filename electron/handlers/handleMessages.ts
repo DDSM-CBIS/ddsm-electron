@@ -59,7 +59,7 @@ export default function handleMessages(): void {
 
   ipcMain.handle(CHANNELS.PATIENT_IMAGES_DETAILS, async (event: Electron.IpcMainInvokeEvent, patientId: string) => {
     try {
-      const response = await axios.get(GET_IMAGES_DETAILS(patientId), { timeout: 10000 });
+      const response = await axios.get(GET_IMAGES_DETAILS(patientId), { timeout: 60000, params: { format: 'full' } });
       return response.data;
     } catch (error) {
       throw new Error(error);
@@ -68,8 +68,12 @@ export default function handleMessages(): void {
 
   ipcMain.handle(CHANNELS.PATIENT_IMAGE, async (event: Electron.IpcMainInvokeEvent, data) => {
     try {
-      const { patientId, filename } = data;
-      const response = await axios.get(GET_IMAGE(patientId, filename), { responseType: 'arraybuffer', timeout: 10000 });
+      const { seriesUID, SOPUID } = data;
+      const response = await axios.get(GET_IMAGE, {
+        responseType: 'arraybuffer',
+        timeout: 60000,
+        params: { series_UID: seriesUID, sop_uid: SOPUID },
+      });
       return response.data;
     } catch (error) {
       throw new Error(error);
