@@ -19,10 +19,17 @@ type FilterSectionProps = {
   abnormalityFilterMenuOptions: AbnormalityFilterObject;
   patientIdsFilterMenuOptions: PatientFilterObject;
   handleFilterApply: (filters) => void;
+  initialFilters?: { filterOptions?: any; abnormalityFilter?: any; patientIds?: any };
 };
 
 export default function FilterSection(props: FilterSectionProps) {
-  const { filtersMenuOptions, abnormalityFilterMenuOptions, patientIdsFilterMenuOptions, handleFilterApply } = props;
+  const {
+    filtersMenuOptions,
+    abnormalityFilterMenuOptions,
+    patientIdsFilterMenuOptions,
+    handleFilterApply,
+    initialFilters,
+  } = props;
   const [filtersMenu, setFiltersMenu] = useState({ options: {}, selected: {} });
   const [abnormalityFilterMenu, setAbnormalityFilterMenu] = useState({
     options: {},
@@ -35,10 +42,13 @@ export default function FilterSection(props: FilterSectionProps) {
   const [isSaveQueryPopupOpen, setIsSaveQueryPopupOpen] = useState(false);
 
   useEffect(() => {
-    setFiltersMenu({ options: filtersMenuOptions, selected: {} });
-    setAbnormalityFilterMenu({ options: abnormalityFilterMenuOptions, selected: {} });
-    setPatientIdsFilterMenu({ options: patientIdsFilterMenuOptions, selected: {} });
-  }, [filtersMenuOptions, abnormalityFilterMenuOptions, patientIdsFilterMenuOptions]);
+    setFiltersMenu({ options: filtersMenuOptions, selected: initialFilters?.filterOptions || {} });
+    setAbnormalityFilterMenu({
+      options: abnormalityFilterMenuOptions,
+      selected: initialFilters?.abnormalityFilter || {},
+    });
+    setPatientIdsFilterMenu({ options: patientIdsFilterMenuOptions, selected: initialFilters?.patientIds || {} });
+  }, [filtersMenuOptions, abnormalityFilterMenuOptions, patientIdsFilterMenuOptions, initialFilters]);
 
   const handleFilterChange = useCallback((menu, value) => {
     const menus = {

@@ -6,16 +6,26 @@ import FilterSection from '../filterSection/FilterSection';
 import PatientSection from '../patientsSection/PatientsSection';
 import { BoxStyled, BoxFilterSectionStyled, BoxContentSectionStyled } from './style';
 import MenuDrawer from '../menuDrawer/MenuDrawer';
+import { useLocation } from 'react-router-dom';
 
 const { DDSM_AGENT } = window;
 
 export default function Home() {
+  const location = useLocation();
   const [loading, setLoading] = useState<boolean>(true);
   const [filtersMenuOptions, setFiltersMenuOptions] = useState<FilterObject>();
   const [abnormalityFilterMenuOptions, setAbnormalityFilterMenuOptions] = useState<AbnormalityFilterObject>();
   const [patientIdsFilterMenuOptions, setPatientIdsFilterMenuOptions] = useState<PatientFilterObject>();
   const [patientsIds, setPatientsIds] = useState<string[]>();
   const [pageIndex, setPageIndex] = useState<number>(1);
+
+  const initialFilters = location.state?.filters;
+
+  useEffect(() => {
+    if (initialFilters) {
+      onApplyFilter(initialFilters);
+    }
+  }, [initialFilters]);
 
   useEffect(() => {
     const getFilterOptions = async () => {
@@ -75,6 +85,7 @@ export default function Home() {
             abnormalityFilterMenuOptions={abnormalityFilterMenuOptions}
             patientIdsFilterMenuOptions={patientIdsFilterMenuOptions}
             handleFilterApply={onApplyFilter}
+            initialFilters={initialFilters}
           />
         </BoxFilterSectionStyled>
         <BoxContentSectionStyled id="patient-section-container">
