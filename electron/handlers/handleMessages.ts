@@ -109,7 +109,32 @@ export default function handleMessages(): void {
       fs.writeFileSync(filePath, data, 'utf-8');
       return 'success';
     } catch (error) {
-      console.error(error);
+      return 'error';
+    }
+  });
+
+  ipcMain.handle(CHANNELS.LOAD_QUERIES, async (event: Electron.IpcMainInvokeEvent) => {
+    try {
+      const folderPath = path.join(__dirname, 'savedQueries');
+      const files = fs.readdirSync(folderPath);
+      const queries = files.map((file) => {
+        const filePath = path.join(folderPath, file);
+        const data = fs.readFileSync(filePath, 'utf-8');
+        return { query: file.replace('.json', ''), filters: JSON.parse(data) };
+      });
+      return queries;
+    } catch (error) {
+      return [];
+    }
+  });
+
+  ipcMain.handle(CHANNELS.DELETE_QUERY, async (event: Electron.IpcMainInvokeEvent, queryName: string) => {
+    try {
+      const folderPath = path.join(__dirname, 'savedQueries');
+      const filePath = path.join(folderPath, `${queryName}.json`);
+      fs.unlinkSync(filePath);
+      return 'success';
+    } catch (error) {
       return 'error';
     }
   });
