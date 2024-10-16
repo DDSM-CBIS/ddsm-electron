@@ -7,7 +7,6 @@ export type SeriesMetadata = {
   uid: string;
 };
 
-// export type ImageMetadata = Record<string, SeriesMetadata>;
 export type ImageMetadata = SeriesMetadata[];
 export type ImagesMetadata = Record<string, SeriesMetadata[]>;
 
